@@ -19,8 +19,7 @@
     "storage",
     "tabs",
     "scripting",
-    "activeTab",
-    "permissions"
+    "activeTab"
   ],
   "optional_host_permissions": [
     "*://*/*"
