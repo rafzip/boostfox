@@ -89,8 +89,7 @@ async function init() {
   let siteCss = await loadAllCss();
   cssInput.value = siteCss[host] || "";
 
-  document.getElementById("saveApply").addEventListener("click", async () => {
-    const css = cssInput.value;
+  async function saveAndApply(css) {
     const previousCss = siteCss[host] || "";
 
     const permissionOk = await ensurePermission(tab.url);
@@ -103,6 +102,11 @@ async function init() {
     siteCss = await saveSiteCss(host, css);
     await applyCss(tab.id, css, previousCss);
     setStatus(css ? "Saved and applied." : "Cleared and removed.");
+  }
+
+  document.getElementById("saveApply").addEventListener("click", async () => {
+    const css = cssInput.value;
+    await saveAndApply(css);
   });
 
   document.getElementById("clear").addEventListener("click", async () => {
@@ -111,6 +115,15 @@ async function init() {
     await applyCss(tab.id, "", previousCss);
     cssInput.value = "";
     setStatus("Cleared for this site.");
+  });
+
+  document.querySelectorAll(".font-btn").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const stack = button.dataset.font || "";
+      const css = stack ? `* { font-family: ${stack} !important; }` : "";
+      cssInput.value = css;
+      await saveAndApply(css);
+    });
   });
 
   document.getElementById("openOptions").addEventListener("click", () => {
