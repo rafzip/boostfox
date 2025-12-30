@@ -91,6 +91,13 @@
     if (!element || element.nodeType !== 1) {
       return false;
     }
+    if (element.id === "boostfox-bar-root") {
+      return false;
+    }
+    const rootNode = element.getRootNode && element.getRootNode();
+    if (rootNode && rootNode.host && rootNode.host.id === "boostfox-bar-root") {
+      return false;
+    }
     const tag = element.tagName;
     return tag !== "HTML" && tag !== "BODY";
   }

@@ -141,7 +141,7 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.type === "zap-add") {
     (async () => {
-      const url = message.url || (sender.tab && sender.tab.url);
+      const url = (sender.tab && sender.tab.url) || message.url;
       const tabId = sender.tab && sender.tab.id;
       if (!url || typeof message.selector !== "string" || !tabId) {
         return;
@@ -200,5 +200,51 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
     })().catch(() => sendResponse({ ok: false }));
 
     return true;
+  }
+
+  if (message.type === "zap-ui-enable") {
+    (async () => {
+      const tab = sender.tab;
+      if (!tab || !tab.id || !tab.url) {
+        return;
+      }
+
+      const origin = new URL(tab.url).origin + "/*";
+      const hasPermission = await api.permissions.contains({ origins: [origin] });
+      if (!hasPermission) {
+        sendResponse({ ok: false });
+        return;
+      }
+
+      await api.scripting.executeScript({
+        target: { tabId: tab.id, allFrames: true },
+        files: ["zap.js"],
+      });
+      await api.tabs.sendMessage(tab.id, { type: "zap-enable" });
+      sendResponse({ ok: true });
+    })().catch(() => sendResponse({ ok: false }));
+
+    return true;
+  }
+
+  if (message.type === "zap-ui-disable") {
+    (async () => {
+      const tab = sender.tab;
+      if (!tab || !tab.id) {
+        return;
+      }
+      try {
+        await api.tabs.sendMessage(tab.id, { type: "zap-disable" });
+      } catch {
+        // Ignore missing content script.
+      }
+      sendResponse({ ok: true });
+    })().catch(() => sendResponse({ ok: false }));
+
+    return true;
+  }
+
+  if (message.type === "open-options") {
+    api.runtime.openOptionsPage();
   }
 });

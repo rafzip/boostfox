@@ -3,58 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <style>
-      body { font: 14px system-ui; margin: 12px; width: 300px; }
-      .row { display: flex; align-items: center; justify-content: space-between; margin: 8px 0; gap: 8px; }
-      button { padding: 6px 10px; }
-      .font-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
-      textarea { width: 100%; height: 140px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      body { font: 14px system-ui; margin: 12px; width: 240px; }
       .muted { opacity: 0.7; font-size: 12px; }
-      .toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; }
     </style>
   </head>
   <body>
-    <div class="row">
-      <div>
-        <div class="muted">site</div>
-        <div id="host">...</div>
-      </div>
-    </div>
-
-    <div class="row">
-      <textarea id="css" placeholder="/* your CSS for this site */"></textarea>
-    </div>
-
-    <div class="row">
-      <button id="saveApply">save + apply</button>
-      <button id="clear">clear</button>
-    </div>
-
-    <div class="row">
-      <label class="toggle">
-        <span>zap mode</span>
-        <input type="checkbox" id="zapToggle" />
-      </label>
-    </div>
-
-    <div class="row">
-      <button id="undoZap">undo last zap</button>
-    </div>
-
-    <div class="row">
-      <div class="font-buttons">
-        <button class="font-btn" data-font="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">sans</button>
-        <button class="font-btn" data-font="'Times New Roman', Times, serif">serif</button>
-        <button class="font-btn" data-font="'Courier New', Courier, monospace">mono</button>
-        <button class="font-btn" data-font="'Comic Sans MS', 'Comic Sans', cursive">comic</button>
-        <button class="font-btn" data-font="'Georgia', 'Times New Roman', serif">georgia</button>
-      </div>
-    </div>
-
-    <div class="row">
-      <button id="openOptions">open options</button>
-    </div>
-
-    <div id="status" class="muted"></div>
+    <div>Boostfox bar is opening...</div>
+    <div class="muted">Controls now live at the bottom of the page.</div>
 
     <script src="popup.js"></script>
   </body>
