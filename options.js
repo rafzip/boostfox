@@ -22,6 +22,11 @@ async function loadAllCss() {
   return siteCss;
 }
 
+async function loadAllZaps() {
+  const { siteZaps = {} } = await api.storage.local.get("siteZaps");
+  return siteZaps;
+}
+
 async function saveSiteCss(host, css) {
   const siteCss = await loadAllCss();
   if (css) {
@@ -31,6 +36,17 @@ async function saveSiteCss(host, css) {
   }
   await api.storage.local.set({ siteCss });
   return siteCss;
+}
+
+async function saveSiteZaps(host, selectors) {
+  const siteZaps = await loadAllZaps();
+  if (selectors && selectors.length) {
+    siteZaps[host] = selectors;
+  } else {
+    delete siteZaps[host];
+  }
+  await api.storage.local.set({ siteZaps });
+  return siteZaps;
 }
 
 function setStatus(message) {
@@ -51,13 +67,29 @@ function refreshList(siteCss) {
   }
 }
 
+function refreshZapList(siteZaps) {
+  const list = document.getElementById("zapList");
+  list.innerHTML = "";
+  const hosts = Object.keys(siteZaps).sort();
+
+  for (const host of hosts) {
+    const option = document.createElement("option");
+    option.value = host;
+    option.textContent = host;
+    list.appendChild(option);
+  }
+}
+
 async function init() {
   const hostInput = document.getElementById("host");
   const cssInput = document.getElementById("css");
   const list = document.getElementById("siteList");
+  const zapList = document.getElementById("zapList");
 
   let siteCss = await loadAllCss();
   refreshList(siteCss);
+  let siteZaps = await loadAllZaps();
+  refreshZapList(siteZaps);
 
   list.addEventListener("change", () => {
     const host = list.value;
@@ -92,6 +124,21 @@ async function init() {
     }
     cssInput.value = "";
     setStatus("Removed.");
+  });
+
+  document.getElementById("clearZaps").addEventListener("click", async () => {
+    const host = zapList.value;
+    if (!host) {
+      setStatus("Choose a host with zaps.");
+      return;
+    }
+
+    siteZaps = await saveSiteZaps(host, []);
+    refreshZapList(siteZaps);
+    if (zapList.value === host) {
+      zapList.value = "";
+    }
+    setStatus("Zaps cleared for site.");
   });
 }
 

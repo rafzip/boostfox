@@ -27,10 +27,15 @@
       }
       .bar {
         font: 13px ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-        background: #f8fafc;
+        background: #FBBA3A;
+        background: linear-gradient(90deg, rgba(251, 186, 58, 1) 0%, rgba(62, 0, 150, 1) 100%);
         border-top: 1px solid #cbd5f5;
         color: #111827;
         box-shadow: 0 -6px 16px rgba(15, 23, 42, 0.2);
+      }
+      .bar * {
+        box-sizing: border-box;
+        color: inherit;
       }
       .row {
         display: flex;
@@ -59,6 +64,7 @@
         padding: 6px 10px;
         border: 1px solid #cbd5f5;
         background: #ffffff;
+        color: #0f172a;
         border-radius: 6px;
         cursor: pointer;
       }

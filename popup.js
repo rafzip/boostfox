@@ -21,26 +21,32 @@ async function showBar() {
     return;
   }
 
-  const permissionOk = await ensurePermission(tab.url);
-  if (!permissionOk) {
+  try {
+    await api.scripting.executeScript({
+      target: { tabId: tab.id, allFrames: false },
+      files: ["bar.js"],
+    });
+  } catch {
+    // Ignore injection errors (e.g. restricted URLs).
+  }
+
+  const enableButton = document.getElementById("enableAccess");
+  const statusEl = document.getElementById("status");
+  if (!enableButton || !statusEl) {
     window.close();
     return;
   }
 
-  try {
-    await api.tabs.sendMessage(tab.id, { type: "bar-toggle" });
-  } catch {
+  enableButton.addEventListener("click", async () => {
     try {
-      await api.scripting.executeScript({
-        target: { tabId: tab.id, allFrames: false },
-        files: ["bar.js"],
-      });
+      const ok = await ensurePermission(tab.url);
+      statusEl.textContent = ok
+        ? "Site access enabled for persistence."
+        : "Permission denied.";
     } catch {
-      // Ignore injection errors (e.g. restricted URLs).
+      statusEl.textContent = "Unable to request permission.";
     }
-  }
-
-  window.close();
+  });
 }
 
 showBar().catch(() => window.close());
