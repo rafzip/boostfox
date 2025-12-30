@@ -84,6 +84,7 @@ async function init() {
 
   const hostLabel = document.getElementById("host");
   const cssInput = document.getElementById("css");
+  const zapToggle = document.getElementById("zapToggle");
   hostLabel.textContent = host;
 
   let siteCss = await loadAllCss();
@@ -129,6 +130,71 @@ async function init() {
   document.getElementById("openOptions").addEventListener("click", () => {
     api.runtime.openOptionsPage();
   });
+
+  document.getElementById("undoZap").addEventListener("click", async () => {
+    const permissionOk = await ensurePermission(tab.url);
+    if (!permissionOk) {
+      setStatus("Permission denied for this site.");
+      return;
+    }
+
+    try {
+      const response = await api.runtime.sendMessage({
+        type: "zap-undo",
+        url: tab.url,
+        tabId: tab.id,
+      });
+      if (response && response.ok) {
+        setStatus("Undid last zap.");
+      } else {
+        setStatus("Nothing to undo.");
+      }
+    } catch {
+      setStatus("Unable to undo zap.");
+    }
+  });
+
+  async function refreshZapToggle() {
+    try {
+      const response = await api.tabs.sendMessage(tab.id, { type: "zap-query" });
+      zapToggle.checked = Boolean(response && response.enabled);
+    } catch {
+      zapToggle.checked = false;
+    }
+  }
+
+  zapToggle.addEventListener("change", async () => {
+    const permissionOk = await ensurePermission(tab.url);
+    if (!permissionOk) {
+      setStatus("Permission denied for this site.");
+      zapToggle.checked = false;
+      return;
+    }
+
+    if (zapToggle.checked) {
+      try {
+        await api.scripting.executeScript({
+          target: { tabId: tab.id, allFrames: true },
+          files: ["zap.js"],
+        });
+        await api.tabs.sendMessage(tab.id, { type: "zap-enable" });
+        setStatus("Zap mode on. Click elements to remove.");
+      } catch {
+        setStatus("Unable to enable zap mode.");
+        zapToggle.checked = false;
+      }
+      return;
+    }
+
+    try {
+      await api.tabs.sendMessage(tab.id, { type: "zap-disable" });
+      setStatus("Zap mode off.");
+    } catch {
+      setStatus("Zap mode already off.");
+    }
+  });
+
+  await refreshZapToggle();
 }
 
 init().catch(() => setStatus("Error loading tab."));
