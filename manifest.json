@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "boostfox",
+  "version": "0.0.1",
+  "description": "Boosts: per-site CSS + zaps.",
+  "action": {
+    "default_title": "Boosts",
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting",
+    "activeTab",
+    "permissions"
+  ],
+  "optional_host_permissions": [
+    "*://*/*"
+  ],
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  }
+}
